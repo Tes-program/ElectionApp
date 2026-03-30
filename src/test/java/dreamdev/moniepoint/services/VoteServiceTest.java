@@ -63,14 +63,12 @@ class VoteServiceTest {
         ongoingElection.setStatus(Status.ONGOING);
         electionRepository.save(ongoingElection);
 
-        // Create candidate
         CandidateRequest candidateRequest = new CandidateRequest();
         candidateRequest.setName("John Doe");
         candidateRequest.setElectionId(electionId);
         CandidateResponse candidate = candidateService.addCandidate(candidateRequest);
         candidateId = candidate.getId();
 
-        // Create valid vote request
         validVoteRequest = new VoteRequest();
         validVoteRequest.setElectionId(electionId);
         validVoteRequest.setCandidateId(candidateId);
@@ -86,10 +84,8 @@ class VoteServiceTest {
         int initialCandidateVotes = candidate.getVoteCount();
         int initialElectionVotes = election.getTotalVotes();
 
-        // Act
         VoteResponse response = voteService.castVote(validVoteRequest);
 
-        // Assert
         assertNotNull(response);
         assertNotNull(response.getId());
         assertEquals(electionId, response.getElectionId());
@@ -98,11 +94,9 @@ class VoteServiceTest {
         assertNotNull(response.getCreatedAt());
         assertEquals(1L, voteRepository.count());
 
-        // Verify candidate voteCount incremented
         Candidates updatedCandidate = candidateRepository.findById(candidateId).get();
         assertEquals(initialCandidateVotes + 1, updatedCandidate.getVoteCount());
 
-        // Verify election totalVotes incremented
         Election updatedElection = electionRepository.findById(electionId).get();
         assertEquals(initialElectionVotes + 1, updatedElection.getTotalVotes());
     }

@@ -38,4 +38,37 @@ public class ElectionServiceImpl implements ElectionService {
                 savedElection.getTotalVotes()
         );
     }
+
+    @Override
+    public ElectionResponse getElectionById(String id) {
+        Election election = electionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Election with id '" + id + "' does not exist"));
+
+        return new ElectionResponse(
+                election.getId(),
+                election.getName(),
+                election.getStartDate(),
+                election.getEndDate(),
+                election.getStatus(),
+                election.getTotalVotes()
+        );
+    }
+
+    @Override
+    public ElectionResponse updateElectionStatus(String id, Status status) {
+        Election election = electionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Election with id '" + id + "' does not exist"));
+
+        election.setStatus(status);
+        Election updatedElection = electionRepository.save(election);
+
+        return new ElectionResponse(
+                updatedElection.getId(),
+                updatedElection.getName(),
+                updatedElection.getStartDate(),
+                updatedElection.getEndDate(),
+                updatedElection.getStatus(),
+                updatedElection.getTotalVotes()
+        );
+    }
 }
