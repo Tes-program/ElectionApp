@@ -6,7 +6,6 @@ import dreamdev.moniepoint.dtos.responses.ElectionResponse;
 import dreamdev.moniepoint.services.ElectionService;
 import dreamdev.moniepoint.services.ResultsService;
 import dreamdev.moniepoint.utils.enums.Status;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/elections")
-@RequiredArgsConstructor
 public class ElectionController {
 
     private final ElectionService electionService;
     private final ResultsService resultsService;
+
+    public ElectionController(ElectionService electionService, ResultsService resultsService) {
+        this.electionService = electionService;
+        this.resultsService = resultsService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ElectionResponse>> getAllElections(
+            @RequestParam(required = false) Status status) {
+        List<ElectionResponse> elections = electionService.getAllElections(status);
+        return ResponseEntity.ok(elections);
+    }
 
     @PostMapping
     public ResponseEntity<ElectionResponse> createElection(@RequestBody ElectionRequest request) {
@@ -47,8 +57,15 @@ public class ElectionController {
         return ResponseEntity.ok(results);
     }
 
-    @lombok.Data
     public static class StatusUpdateRequest {
         private Status status;
+
+        public Status getStatus() {
+            return status;
+        }
+
+        public void setStatus(Status status) {
+            this.status = status;
+        }
     }
 }

@@ -8,6 +8,9 @@ import dreamdev.moniepoint.utils.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ElectionServiceImpl implements ElectionService {
@@ -70,5 +73,27 @@ public class ElectionServiceImpl implements ElectionService {
                 updatedElection.getStatus(),
                 updatedElection.getTotalVotes()
         );
+    }
+
+    @Override
+    public List<ElectionResponse> getAllElections(Status status) {
+        List<Election> elections;
+
+        if (status != null) {
+            elections = electionRepository.findByStatus(status);
+        } else {
+            elections = electionRepository.findAll();
+        }
+
+        return elections.stream()
+                .map(election -> new ElectionResponse(
+                        election.getId(),
+                        election.getName(),
+                        election.getStartDate(),
+                        election.getEndDate(),
+                        election.getStatus(),
+                        election.getTotalVotes()
+                ))
+                .collect(Collectors.toList());
     }
 }
